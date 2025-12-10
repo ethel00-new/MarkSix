@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from tabulate import tabulate
 from collections import Counter
 from itertools import combinations
+import random
 
 # --------------------- Config ---------------------
 URL = "https://zh.lottolyzer.com/search/hong-kong/mark-six"
@@ -40,7 +41,7 @@ rows = table.select("tbody tr")
 results = []
 for row in rows:
     cols = row.find_all("td")
-    
+
     winning_str = cols[2].get_text(strip=True)
     extra_str   = cols[3].get_text(strip=True)
     repeat_str  = cols[4].get_text(strip=True)
@@ -57,7 +58,7 @@ for row in rows:
     })
 
 # --------------------- Output ---------------------
-# print(results);
+# --------------------- Get Result ---------------------
 headers = ["Winning Numbers", "Extra Number", "Repeated from Last"]
 
 # Convert the data into rows
@@ -69,9 +70,9 @@ for r in results:
         ", ".join(map(str, r["repeated_from_last"])) if r["repeated_from_last"] else "-"
     ])
 
-print(tabulate(table_data, headers=headers, tablefmt="grid"))
+# print(tabulate(table_data, headers=headers, tablefmt="grid"))
 
-# repeat number
+# --------------------- Most Repeated Numbers  ---------------------
 all_numbers = []
 
 for draw in results:
@@ -86,10 +87,18 @@ repeated_list = [(num, count) for num, count in repeated_numbers_sorted.items()]
 
 repeated_headers = ["Number", "Times Appeared"]
 
+# Random no.
+can_drow_list = list(repeated_numbers.keys())
+selected = random.sample(can_drow_list, 6)
+selected_sorted = sorted(selected)
+print("\n=== Random Number ===")
+print(selected_sorted)
+
+
 print("\n=== Most Repeated Numbers ===")
 print(tabulate(repeated_list, headers=repeated_headers, tablefmt="grid"))
 
-# repeat pair
+# --------------------- Most Frequently Appearing Number Pairs  ---------------------
 all_pairs = []
 
 for draw in results:
@@ -107,8 +116,8 @@ pair_table = []
 for (n1, n2), count in frequent_pairs:
     pair_table.append([f"{n1}, {n2}", count])
 
-pair_headers = ["Number Pair", "Times Appeared Together"]
+# pair_headers = ["Number Pair", "Times Appeared Together"]
 
-print("\n=== Most Frequently Appearing Number Pairs ===")
-if pair_table:
-    print(tabulate(pair_table, headers=pair_headers, tablefmt="grid"))
+# print("\n=== Most Frequently Appearing Number Pairs ===")
+# if pair_table:
+#     print(tabulate(pair_table, headers=pair_headers, tablefmt="grid"))
